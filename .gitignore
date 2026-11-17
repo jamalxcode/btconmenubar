@@ -1,0 +1,4 @@
+dist/
+/btconmenubar
+*.test
+.DS_Store
