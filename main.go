@@ -37,6 +37,7 @@ func main() {
 
 func (a *app) onReady() {
 	systray.SetTitle("₿ …")
+	setMenuBarFontSize(a.cfg.FontSize)
 	systray.SetTooltip("Bitcoin price")
 
 	a.mPrice = systray.AddMenuItem("Loading…", "")
@@ -63,6 +64,11 @@ func (a *app) onReady() {
 	ivItems := map[time.Duration]*systray.MenuItem{}
 	for _, d := range intervals {
 		ivItems[d] = mInterval.AddSubMenuItemCheckbox(humanDuration(d), "", int(d.Seconds()) == a.cfg.IntervalSeconds)
+	}
+	mFont := systray.AddMenuItem("Text Size", "Size of the price in the menu bar")
+	fontItems := map[float64]*systray.MenuItem{}
+	for _, f := range fontSizes {
+		fontItems[f.Pt] = mFont.AddSubMenuItemCheckbox(f.Label, "", f.Pt == a.cfg.FontSize)
 	}
 	mShowChange := systray.AddMenuItemCheckbox("Show 24h Change in Menu Bar", "", a.cfg.ShowChange)
 	mLogin := systray.AddMenuItemCheckbox("Launch at Login", "", launchAtLoginEnabled())
@@ -111,6 +117,19 @@ func (a *app) onReady() {
 				setChecked(it, k == d)
 			}
 			a.kick()
+		})
+	}
+	for pt, item := range fontItems {
+		pt := pt
+		on(item, func() {
+			a.mu.Lock()
+			a.cfg.FontSize = pt
+			a.save()
+			a.mu.Unlock()
+			for k, it := range fontItems {
+				setChecked(it, k == pt)
+			}
+			setMenuBarFontSize(pt)
 		})
 	}
 	on(mShowChange, func() {
@@ -171,7 +190,7 @@ func (a *app) priceLoop() {
 
 func (a *app) refresh() {
 	a.mu.Lock()
-	cur, show := a.cfg.Currency, a.cfg.ShowChange
+	cur, show, font := a.cfg.Currency, a.cfg.ShowChange, a.cfg.FontSize
 	a.mu.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -193,6 +212,7 @@ func (a *app) refresh() {
 	a.mu.Unlock()
 
 	systray.SetTitle(menuBarTitle(q, show))
+	setMenuBarFontSize(font) // the font sticks, but set it again in case macOS rebuilt the item
 	systray.SetTooltip("Bitcoin " + formatPrice(q.Price, q.Currency))
 	a.mPrice.SetTitle("Bitcoin: " + formatPrice(q.Price, q.Currency))
 	if q.HasChange {

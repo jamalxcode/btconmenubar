@@ -10,15 +10,22 @@ import (
 
 // Config is saved in ~/Library/Application Support/BTCMenuBar/config.json.
 type Config struct {
-	Currency        string `json:"currency"`
-	IntervalSeconds int    `json:"interval_seconds"`
-	ShowChange      bool   `json:"show_change"`
-	AutoCheckUpdate bool   `json:"auto_check_update"`
+	Currency        string  `json:"currency"`
+	IntervalSeconds int     `json:"interval_seconds"`
+	ShowChange      bool    `json:"show_change"`
+	AutoCheckUpdate bool    `json:"auto_check_update"`
+	FontSize        float64 `json:"font_size"` // points; 0 = the normal macOS menu bar size
 }
 
 func defaultConfig() Config {
-	return Config{Currency: "usd", IntervalSeconds: 60, ShowChange: true, AutoCheckUpdate: true}
+	return Config{Currency: "usd", IntervalSeconds: 60, ShowChange: true, AutoCheckUpdate: true, FontSize: 16}
 }
+
+// text sizes offered in the menu: label and points (0 = normal macOS size)
+var fontSizes = []struct {
+	Label string
+	Pt    float64
+}{{"Normal", 0}, {"Large", 16}, {"Extra Large", 18}}
 
 var intervals = []time.Duration{30 * time.Second, time.Minute, 5 * time.Minute, 15 * time.Minute}
 

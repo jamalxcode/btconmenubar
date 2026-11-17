@@ -30,6 +30,7 @@ The menu shows which source the current number came from and when it was made.
 - Open heat.sala.company / Open on CoinGecko
 - **Currency**: USD, EUR, GBP, JPY, AUD, CAD, CHF, AED, SAR, KWD
 - **Refresh Every**: 30 s, 1 min (default), 5 min, 15 min
+- **Text Size**: Normal (macOS default), Large (16 pt, default), Extra Large (18 pt)
 - Show 24h Change in Menu Bar
 - Launch at Login (adds a LaunchAgent in `~/Library/LaunchAgents`)
 - **Check for Updates…**: looks up the newest GitHub release; if it's newer, asks, downloads `BTCMenuBar.zip`, swaps the app in place and opens it again. The app also checks by itself every 12 hours and shows **⬆ Install Update vX.Y.Z** in the menu when one is out.
